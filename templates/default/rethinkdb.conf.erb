@@ -1,0 +1,80 @@
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# RethinkDB instance configuration sample
+#
+#
+# Give this file the extension .conf and put it in /etc/rethinkdb/instances.d in order to enable it.
+#
+# See http://www.rethinkdb.com/docs/guides/startup/ for the complete documentation
+#
+# Uncomment an option to change its value.
+
+###############################
+## Init script configuration
+###############################
+
+## User and group used to run rethinkdb
+runuser=<%= @instance[:user] %>
+rungroup=<%= @instance[:group] %>
+
+###############################
+## RethinkDB configuration
+###############################
+
+### File path options
+
+## Directory to store data and metadata
+## Default: /var/lib/rethinkdb/<name>/ (where <name> is the name of this file without the extension)
+directory=<%= @instance[:directory] %>
+pid-file=/opt/rethinkdb/<%= @instance[:name] %>/pid_file
+
+### Network options
+
+## Address of local interfaces to listen on when accepting connections
+## May be 'all' or an IP address, loopback addresses are enabled by default
+## Default: all local addresses
+bind=<%= @instance[:address] %>
+
+## The port for rethinkdb protocol for client drivers
+## Default: 28015 + port-offset
+driver-port=<%= @instance[:driverPort] %>
+
+## The port for receiving connections from other nodes
+## Default: 29015 + port-offset
+cluster-port=<%= @instance[:clusterPort] %>
+
+## The host:port of a node that rethinkdb will connect to
+## This option can be specified multiple times.
+## Default: none
+# join=example.com:29015
+
+## All ports used locally will have this value added
+## By default, if no ports are specified, the port-offset will be automatically
+## allocated, starting from 0. The first instance will listen on the ports 28015,
+## 29015 and 8080. The second instance will listen on the ports 28016, 29016 and 8081.
+port-offset=<%= @instance[:portOffset] %>
+
+### Web options
+
+## Port for the http admin console
+## Default: 8080 + port-offset
+http-port=<%= @instance[:httpPort] %>
+
+### CPU options
+
+## The number of cores to use
+## Default: total number of cores of the CPU
+cores=<%= @cores %>
