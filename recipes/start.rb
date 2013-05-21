@@ -18,10 +18,11 @@
 # limitations under the License.
 #
 
-# provisions upstart script
+# service start
 service 'rethinkdb' do
-  action :stop
-  provider Chef::Provider::Service::Upstart
+  action :start
+  supports :status => true, :restart => true
+  provider Chef::Provider::Service::Init
 end
 
 node.rethinkdb.instances.each do |instance|
@@ -31,7 +32,13 @@ node.rethinkdb.instances.each do |instance|
     shell '/bin/false' 
     :create
   end
-    
+  
+  unless system('egrep -i "^rethinkdb" /etc/group')    
+    group "#{instance.group}" do
+      action :create
+    end
+  end
+  
   group "#{instance.group}" do
     action :modify    
     members instance.user
@@ -56,12 +63,7 @@ node.rethinkdb.instances.each do |instance|
       :cores    => node.rethinkdb.make_threads 
     })
     mode 00440
+    notifies :restart, "service[rethinkdb]", :delayed
   end
 
-end
-
-service 'rethinkdb' do
-  provider Chef::Provider::Service::Init
-  action :restart
-  supports :restart=>true, :status=>true  
 end
