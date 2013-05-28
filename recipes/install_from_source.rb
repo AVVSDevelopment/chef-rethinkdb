@@ -25,7 +25,7 @@ packages.each do |dependency|
   package dependency
 end
 #http://download.rethinkdb.com/dist/rethinkdb-1.4.5.tgz
-rethinkdb_tar = "rethinkdb-#{node['nodejs']['version']}.tgz"
+rethinkdb_tar = "rethinkdb-#{node['rethinkdb']['version']}.tgz"
 rethinkdb_tar_path = rethinkdb_tar
 
 # Let the user override the source url in the attributes
