@@ -38,6 +38,6 @@ case node['platform_family']
 end
 
 packages.each do |rethink_pkg|
-  package rethink_pkg
+  package "#{rethink_pkg}=#{node.rethinkdb.version}"
 end
 
