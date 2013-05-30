@@ -1,5 +1,5 @@
 name             'rethinkdb'
-maintainer       'AVVS Development, LLC'
+maintainer       'Make-o-Matic, LLC'
 maintainer_email 'v@aminev.me'
 license          'Apache 2.0'
 description      'Installs/Configures rethinkdb'
