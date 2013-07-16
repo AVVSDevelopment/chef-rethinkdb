@@ -1,4 +1,4 @@
 name 'rethinkdb'
-description 'Rethinkdb - master'
+description 'Rethinkdb cluster node'
 
 run_list("recipe[rethinkdb]")
