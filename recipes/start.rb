@@ -74,7 +74,7 @@ node.rethinkdb.instances.each_with_index do |instance, index|
     group instance.group
     source 'rethinkdb.conf.erb'
     variables({
-      :instance => instance,
+      :instance => node.default.rethinkdb[index],
       :cores    => node.rethinkdb.make_threads 
     })
     mode 00440
