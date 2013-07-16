@@ -36,7 +36,7 @@ service 'rethinkdb' do
   provider Chef::Provider::Service::Init
 end
 
-node.rethinkdb.instances.each do |instance|
+node.rethinkdb.instances.each_with_index do |instance, index|
   
   user "#{instance.user}" do
     system false   
@@ -64,7 +64,7 @@ node.rethinkdb.instances.each do |instance|
   end
 
   if node['rethinkdb']['bind_to_network_interface'] 
-    instance.address = node.network.interfaces[node['rethinkdb']['network_interface']]
+    node.default.rethinkdb[index].address = node.network.interfaces[node['rethinkdb']['network_interface']]
   end
  
   config_name = "/etc/rethinkdb/instances.d/#{instance.name}.conf"
