@@ -64,7 +64,7 @@ node.rethinkdb.instances.each_with_index do |instance, index|
   end
 
   if node['rethinkdb']['bind_to_network_interface'] 
-    node.default.rethinkdb[index].address = node.network.interfaces[node['rethinkdb']['network_interface']]
+    node.default.rethinkdb[index].address = node.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src
   end
  
   config_name = "/etc/rethinkdb/instances.d/#{instance.name}.conf"
