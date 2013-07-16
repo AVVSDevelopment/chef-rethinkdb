@@ -14,7 +14,7 @@ Attributes
 ----------
 
     default['rethinkdb']['install_method'] = 'package'
-    default['rethinkdb']['version'] = '1.4.5'
+    default['rethinkdb']['version'] = '1.7.1'
     default['rethinkdb']['make_threads'] = node['cpu'] ? node['cpu']['total'].to_i : 1
     default['rethinkdb']['src_url'] = "http://download.rethinkdb.com/dist"
     default['rethinkdb']['dir'] = "/usr/local"

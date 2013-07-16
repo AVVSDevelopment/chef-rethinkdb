@@ -51,7 +51,11 @@ node.rethinkdb.instances.each do |instance|
     recursive true
     mode 00775
   end
-  
+
+  if node['rethinkdb']['join_to_cluster'] 
+    
+  end
+ 
   config_name = "/etc/rethinkdb/instances.d/#{instance.name}.conf"
   
   template config_name do
@@ -63,7 +67,21 @@ node.rethinkdb.instances.each do |instance|
       :cores    => node.rethinkdb.make_threads 
     })
     mode 00440
-    notifies :restart, "service[rethinkdb]", :delayed
   end
 
+  if node['rethinkdb']['join_to_cluster']
+    rethinkdb_servers = search(:node, "role:rethinkdb")
+    rethinkdb_servers.each do |server|
+      execute "add join" do
+        command "echo '#{server}'; sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server['ipaddress']}/g' #{config_name}"
+      end      
+    end
+  end
+
+  ruby_block "notify service" do
+    block do
+      # empty
+    end
+    notifies :restart, "service[rethinkdb]", :delayed
+  end
 end
