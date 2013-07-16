@@ -18,6 +18,17 @@
 # limitations under the License.
 #
 
+
+rethinkdb_servers = search(:node, "role:rethinkdb")
+servers_ips = {}
+rethinkdb_servers.each do |server|
+  if node['rethinkdb']['bind_to_network_interface']
+    servers_ips[server.name] = server.network.interfaces[node['rethinkdb']['network_interface']]
+  else
+    servers_ips[server.name] = server.ipaddress
+  end
+end
+
 # service start
 service 'rethinkdb' do
   action :start
@@ -52,8 +63,8 @@ node.rethinkdb.instances.each do |instance|
     mode 00775
   end
 
-  if node['rethinkdb']['join_to_cluster'] 
-    
+  if node['rethinkdb']['bind_to_network_interface'] 
+    instance.address = node.network.interfaces[node['rethinkdb']['network_interface']]
   end
  
   config_name = "/etc/rethinkdb/instances.d/#{instance.name}.conf"
@@ -72,8 +83,8 @@ node.rethinkdb.instances.each do |instance|
   if node['rethinkdb']['join_to_cluster']
     rethinkdb_servers = search(:node, "role:rethinkdb")
     rethinkdb_servers.each do |server|
-      execute "add join" do
-        command "echo '#{server}'; sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server['ipaddress']}/g' #{config_name}"
+      execute "joining #{server.name}" do
+        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{servers_ips[server.name]}/g' #{config_name}"
       end      
     end
   end
