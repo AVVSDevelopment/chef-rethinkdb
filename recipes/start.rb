@@ -23,7 +23,7 @@ rethinkdb_servers = search(:node, "role:rethinkdb")
 servers_ips = {}
 rethinkdb_servers.each do |server|
   if node['rethinkdb']['bind_to_network_interface']
-    servers_ips[server.name] = server.network.interfaces[node['rethinkdb']['network_interface']]
+    servers_ips[server.name] = server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src
   else
     servers_ips[server.name] = server.ipaddress
   end
