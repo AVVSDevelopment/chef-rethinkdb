@@ -76,7 +76,7 @@ node.rethinkdb.instances.each do |instance|
     source 'rethinkdb.conf.erb'
     variables({
       :instance => instance,
-      :cores    => node.rethinkdb.make_threads
+      :cores    => node.rethinkdb.make_threads,
       :bind     => bind
     })
     mode 00440
