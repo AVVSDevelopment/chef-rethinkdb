@@ -36,7 +36,7 @@ service 'rethinkdb' do
   provider Chef::Provider::Service::Init
 end
 
-node.rethinkdb.instances.each_with_index do |instance, index|
+node.rethinkdb.instances.each do |instance|
   
   user "#{instance.user}" do
     system false   
@@ -63,8 +63,9 @@ node.rethinkdb.instances.each_with_index do |instance, index|
     mode 00775
   end
 
+  bind = instance.address
   if node['rethinkdb']['bind_to_network_interface'] 
-    node.default.rethinkdb[index].address = node.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src
+    bind = node.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src
   end
  
   config_name = "/etc/rethinkdb/instances.d/#{instance.name}.conf"
@@ -74,8 +75,9 @@ node.rethinkdb.instances.each_with_index do |instance, index|
     group instance.group
     source 'rethinkdb.conf.erb'
     variables({
-      :instance => node.default.rethinkdb[index],
-      :cores    => node.rethinkdb.make_threads 
+      :instance => instance,
+      :cores    => node.rethinkdb.make_threads
+      :bind     => bind
     })
     mode 00440
   end
