@@ -23,10 +23,11 @@ rethinkdb_servers = search(:node, "role:rethinkdb")
 servers_ips = []
 rethinkdb_servers.each do |server|
   server.rethinkdb.instances.each do |instance|
+    clusterPort = (instance.clusterPort + instance.portOffset).to_s()
     if node['rethinkdb']['bind_to_network_interface']
-      servers_ips << server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + instance.clusterPort.to_s()
+      servers_ips << server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + clusterPort
     else
-      servers_ips << server.ipaddress + ":" + instance.clusterPort.to_s()
+      servers_ips << server.ipaddress + ":" + clusterPort
     end
   end
 end
@@ -87,7 +88,7 @@ node.rethinkdb.instances.each do |instance|
   if node['rethinkdb']['join_to_cluster']
     servers_ips.each do |server|
       execute "joining #{server}" do
-        command "echo '#{servers_ips}'; sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server}/g' #{config_name}"
+        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server}/g' #{config_name}"
       end      
     end
   end
