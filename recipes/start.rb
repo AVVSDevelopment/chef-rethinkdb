@@ -87,7 +87,7 @@ node.rethinkdb.instances.each do |instance|
   if node['rethinkdb']['join_to_cluster']
     servers_ips.each do |server|
       execute "joining #{server}" do
-        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server}/g' #{config_name}"
+        command "echo '#{servers_ips}'; sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server}/g' #{config_name}"
       end      
     end
   end
