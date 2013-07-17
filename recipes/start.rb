@@ -22,7 +22,7 @@
 rethinkdb_servers = search(:node, "role:rethinkdb")
 servers_ips = []
 rethinkdb_servers.each do |server|
-  if rethinkdb.has_key?("rethinkdb")
+  if server.has_key?("rethinkdb")
     server.rethinkdb.instances.each do |instance|
       clusterPort = (instance.clusterPort + instance.portOffset).to_s()
       if node['rethinkdb']['bind_to_network_interface']
