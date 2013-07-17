@@ -86,7 +86,7 @@ node.rethinkdb.instances.each do |instance|
     rethinkdb_servers = search(:node, "role:rethinkdb")
     rethinkdb_servers.each do |server|
       execute "joining #{server.name}" do
-        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{servers_ips[server.name]}/g' #{config_name}"
+        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{servers_ips[server.name]}:#{server.clusterPort}/g' #{config_name}"
       end      
     end
   end
