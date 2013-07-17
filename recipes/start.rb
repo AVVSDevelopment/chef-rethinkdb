@@ -24,9 +24,9 @@ servers_ips = []
 rethinkdb_servers.each do |server|
   server.rethinkdb.instances.each do |instance|
     if node['rethinkdb']['bind_to_network_interface']
-      servers_ips << server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + instance.clusterPort
+      servers_ips << server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + instance.clusterPort.to_s()
     else
-      servers_ips << server.ipaddress + ":" + instance.clusterPort
+      servers_ips << server.ipaddress + ":" + instance.clusterPort.to_s()
     end
   end
 end
