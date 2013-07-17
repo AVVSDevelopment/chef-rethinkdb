@@ -1,8 +1,9 @@
 #
-# Cookbook Name:: nodejs
-# Attributes:: nodejs
+# Author:: Vitaly Aminev (v@aminev.me)
+# Cookbook Name:: rethinkdb
+# Attributes:: default
 #
-# Copyright 2010-2012, Promet Solutions
+# License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@
 #
 
 default['rethinkdb']['install_method'] = 'package'
-default['rethinkdb']['version'] = '1.5.2'
+default['rethinkdb']['version'] = '1.7.1'
 default['rethinkdb']['make_threads'] = node['cpu'] ? node['cpu']['total'].to_i : 1
 default['rethinkdb']['src_url'] = "http://download.rethinkdb.com/dist"
 default['rethinkdb']['dir'] = "/usr/local"
@@ -36,3 +37,7 @@ default['rethinkdb']['instances'] = [
       :directory => "/opt/rethinkdb/rethinkdb.yb.com/data"
     }
 ]
+
+default['rethinkdb']['join_to_cluster'] = false
+default['rethinkdb']['bind_to_network_interface'] = false
+default['rethinkdb']['network_interface'] = 'eth0'

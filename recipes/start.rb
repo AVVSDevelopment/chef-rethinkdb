@@ -18,6 +18,33 @@
 # limitations under the License.
 #
 
+
+rethinkdb_servers = search(:node, "role:rethinkdb")
+servers_ips = []
+rethinkdb_servers.each do |server|
+  if server.has_key?("rethinkdb")
+    server.rethinkdb.instances.each do |instance|
+      clusterPort = (instance.clusterPort + instance.portOffset).to_s()
+      if node['rethinkdb']['bind_to_network_interface']
+        servers_ips << server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + clusterPort
+      else
+        servers_ips << server.ipaddress + ":" + clusterPort
+      end
+    end
+  end
+end
+
+# merge curreny node
+servers_ips = servers_ips.to_set()
+node.rethinkdb.instances.each do |instance|
+  clusterPort = (instance.clusterPort + instance.portOffset).to_s()
+  if node['rethinkdb']['bind_to_network_interface']
+    servers_ips.add(node.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + clusterPort)
+  else
+    servers_ips.add(node.ipaddress + ":" + clusterPort)
+  end
+end
+
 # service start
 service 'rethinkdb' do
   action :start
@@ -51,7 +78,12 @@ node.rethinkdb.instances.each do |instance|
     recursive true
     mode 00775
   end
-  
+
+  bind = instance.address
+  if node['rethinkdb']['bind_to_network_interface'] 
+    bind = node.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src
+  end
+ 
   config_name = "/etc/rethinkdb/instances.d/#{instance.name}.conf"
   
   template config_name do
@@ -60,10 +92,24 @@ node.rethinkdb.instances.each do |instance|
     source 'rethinkdb.conf.erb'
     variables({
       :instance => instance,
-      :cores    => node.rethinkdb.make_threads 
+      :cores    => node.rethinkdb.make_threads,
+      :bind     => bind
     })
     mode 00440
-    notifies :restart, "service[rethinkdb]", :delayed
   end
 
+  if node['rethinkdb']['join_to_cluster']
+    servers_ips.each do |server|
+      execute "joining #{server}" do
+        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server}/g' #{config_name}"
+      end      
+    end
+  end
+
+  ruby_block "notify service" do
+    block do
+      # empty
+    end
+    notifies :restart, "service[rethinkdb]", :delayed
+  end
 end

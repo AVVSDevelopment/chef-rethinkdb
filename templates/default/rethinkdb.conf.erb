@@ -46,7 +46,7 @@ pid-file=/opt/rethinkdb/<%= @instance[:name] %>/pid_file
 ## Address of local interfaces to listen on when accepting connections
 ## May be 'all' or an IP address, loopback addresses are enabled by default
 ## Default: all local addresses
-bind=<%= @instance[:address] %>
+bind=<%= @bind %>
 
 ## The port for rethinkdb protocol for client drivers
 ## Default: 28015 + port-offset
