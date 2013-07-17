@@ -20,12 +20,14 @@
 
 
 rethinkdb_servers = search(:node, "role:rethinkdb")
-servers_ips = {}
+servers_ips = []
 rethinkdb_servers.each do |server|
-  if node['rethinkdb']['bind_to_network_interface']
-    servers_ips[server.name] = server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src
-  else
-    servers_ips[server.name] = server.ipaddress
+  server.rethinkdb.instances.each do |instance|
+    if node['rethinkdb']['bind_to_network_interface']
+      servers_ips << server.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + instance.clusterPort
+    else
+      servers_ips << server.ipaddress + ":" + instance.clusterPort
+    end
   end
 end
 
@@ -83,10 +85,9 @@ node.rethinkdb.instances.each do |instance|
   end
 
   if node['rethinkdb']['join_to_cluster']
-    rethinkdb_servers = search(:node, "role:rethinkdb")
-    rethinkdb_servers.each do |server|
-      execute "joining #{server.name}" do
-        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{servers_ips[server.name]}:#{server.clusterPort}/g' #{config_name}"
+    servers_ips.each do |server|
+      execute "joining #{server}" do
+        command "sed -i 's/# join=example.com:29015/# join=example.com:29015\\njoin=#{server}/g' #{config_name}"
       end      
     end
   end
