@@ -34,6 +34,17 @@ rethinkdb_servers.each do |server|
   end
 end
 
+# merge curreny node
+servers_ips = servers_ips.to_set()
+node.rethinkdb.instances.each do |instance|
+  clusterPort = (instance.clusterPort + instance.portOffset).to_s()
+  if node['rethinkdb']['bind_to_network_interface']
+    servers_ips.add(node.network.interfaces[node['rethinkdb']['network_interface']].routes[0].src + ":" + clusterPort)
+  else
+    servers_ips.add(node.ipaddress + ":" + clusterPort)
+  end
+end
+
 # service start
 service 'rethinkdb' do
   action :start
