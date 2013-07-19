@@ -40,7 +40,7 @@ end
 packages.each do |pkg|
   
   package "#{pkg}" do
-    version "#{node[pkg]['version']}*"
+    version "'#{node[pkg]['version']}*'"
     action :install
   end
   
