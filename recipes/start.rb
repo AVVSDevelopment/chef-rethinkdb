@@ -34,7 +34,7 @@ rethinkdb_servers.each do |server|
   end
 end
 
-# merge curreny node
+# merge current node
 servers_ips = servers_ips.to_set()
 node.rethinkdb.instances.each do |instance|
   clusterPort = (instance.clusterPort + instance.portOffset).to_s()
